@@ -2,13 +2,14 @@
 export function openPopup(popup) {
     popup.classList.add('popup_is-opened');
 
-     // Добавляем слушатель для закрытия по ESC
-     document.addEventListener('keydown', closePopupByEsc);
+    // Добавляем слушатель для закрытия по ESC
+    document.addEventListener('keydown', closePopupByEsc);
 }
 
 // Общая функция закрытия попапа
 export function closePopup(popup) {
     popup.classList.remove('popup_is-opened');
+    document.removeEventListener('keydown', closePopupByEsc); // Удаление обработчика
 }
 
 // Функция для закрытия попапа по ESC

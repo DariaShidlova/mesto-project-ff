@@ -1,22 +1,13 @@
-// @todo: Темплейт карточки
-
-// @todo: DOM узлы
-
-// @todo: Функция создания карточки
-
-// @todo: Функция удаления карточки
-
-// @todo: Вывести карточки на страницу
-
 import "./pages/index.css";
-import { createCard } from "./components/cards.js";
-import { deleteCard } from "./components/cards.js";
+import { createCard } from "./components/card.js";
+import { deleteCard } from "./components/card.js";
 import { openPopup, closePopup } from "./components/modal.js";
-import { initialCards } from "./components/cards";
+import { initialCards } from "./components/cards.js";
+
 
 // объявление глобальных переменных
 const cardList = document.querySelector('.places__list');
-const formElement = document.querySelector('.popup__form[name="edit-profile"]');
+const popupForm = document.querySelector('.popup__form[name="edit-profile"]');
 const nameInput = document.querySelector('.popup__input_type_name');
 const jobInput = document.querySelector('.popup__input_type_description');
 const profileTitle = document.querySelector('.profile__title');
@@ -30,10 +21,26 @@ const newCardForm = document.querySelector('.popup__form[name="new-place"]');
 const placeNameInput = newCardForm.querySelector('.popup__input_type_card-name');
 const linkInput = newCardForm.querySelector('.popup__input_type_url');
 const popups = document.querySelectorAll('.popup');
+const imagePopup = document.querySelector('.popup_type_image');
+const imageElement = imagePopup.querySelector('.popup__image');
+const captionElement = imagePopup.querySelector('.popup__caption');
 
-//добавление карточек на страницу
+// Функция открытия изображения
+function openImagePopup(imageSrc, caption) {
+    imageElement.src = imageSrc;
+    imageElement.alt = caption;
+    captionElement.textContent = caption;
+    openPopup(imagePopup);
+}
+
+// Функция изменения статуса лайка
+function toggleLike(event) {
+    event.target.classList.toggle('card__like-button_is-active');
+}
+
+// Добавление карточек на страницу
 initialCards.forEach(cardData => {
-    const cardElement = createCard(cardData, deleteCard);
+    const cardElement = createCard(cardData, deleteCard, openImagePopup, toggleLike);
     cardList.append(cardElement);
 });
 
@@ -42,7 +49,6 @@ closeButtons.forEach(button => {
     const popup = button.closest('.popup');
     button.addEventListener('click', () => closePopup(popup));
 });
-
 
 // Открытие попапа редактирования профиля
 editButton.addEventListener('click', () => {
@@ -53,7 +59,7 @@ editButton.addEventListener('click', () => {
 });
 
 // функция редактирования профиля
-function handleFormSubmit(evt) {
+function handleFormEdit(evt) {
     evt.preventDefault(); // Отмена стандартного поведения формы
 
     // Получаем значения полей из формы
@@ -68,7 +74,7 @@ function handleFormSubmit(evt) {
     closePopup(editPopup);
 }
 
-formElement.addEventListener('submit', handleFormSubmit);
+popupForm.addEventListener('submit', handleFormEdit);
 
 // Открытие попапа добавления карточки
 addButton.addEventListener('click', () => openPopup(addCardPopup));
@@ -84,7 +90,7 @@ newCardForm.addEventListener('submit', function(evt) {
     };
 
     // Создаем и добавляем новую карточку в начало списка
-    const newCardElement = createCard(cardData, deleteCard);
+    const newCardElement = createCard(cardData, deleteCard, openImagePopup, toggleLike);
     cardList.prepend(newCardElement); // Добавляем карточку в начало списка
 
     // Закрываем попап и очищаем форму
@@ -100,4 +106,3 @@ popups.forEach(popup => {
         }
     });
 });
-
