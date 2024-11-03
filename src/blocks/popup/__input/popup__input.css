@@ -20,3 +20,24 @@
     line-height: 15px;
   }
 }
+
+.popup__error {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+  display: none;
+}
+
+.popup__error_visible {
+  display: block;
+}
+
+.popup__button_disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Класс для выделения полей с ошибкой красной линией */
+.popup__input_type_error {
+  border-bottom: 2px solid red;
+}

@@ -1,16 +1,14 @@
 // Импорт функций открытия и закрытия попапов
-import { openPopup } from './modal';
+import { openPopup } from "../components/modal";
 
 // добавление карточки
-export function createCard(cardData, deleteCallback, openImagePopup, toggleLike) {
+export function createCard(cardData, deleteCallback, openImagePopup, toggleLike, userId) {
     const template = document.querySelector('#card-template').content.querySelector('.places__item');
     const cardElement = template.cloneNode(true);
 
     // установка значений в карточке
     const cardImage = cardElement.querySelector('.card__image');
     cardElement.querySelector('.card__title').textContent = cardData.name;
-    //   cardElement.querySelector('.card__image').src = cardData.link;
-    //   cardElement.querySelector('.card__image').alt = cardData.name;
     cardImage.src = cardData.link;
     cardImage.alt = cardData.name;
 

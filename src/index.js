@@ -1,9 +1,19 @@
 import "./pages/index.css";
 import { createCard } from "./components/card.js";
 import { deleteCard } from "./components/card.js";
-import { openPopup, closePopup } from "./components/modal.js";
-import { initialCards } from "./components/cards.js";
+import { openPopup,closePopup } from "./components/modal.js";
+import { initialCards} from "./components/cards.js";
+import { enableValidation, clearValidation } from "./components/validation.js";
+import { getInitialCards, getUserInfo, addNewCard, updateUserProfile } from "./components/api.js";
 
+enableValidation({
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+});
 
 // объявление глобальных переменных
 const cardList = document.querySelector('.places__list');
@@ -55,6 +65,7 @@ editButton.addEventListener('click', () => {
     //Подставляем текущее имя и описание в поля формы
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
+    clearValidation(popupForm);
     openPopup(editPopup);
 });
 
@@ -74,29 +85,62 @@ function handleFormEdit(evt) {
     closePopup(editPopup);
 }
 
-popupForm.addEventListener('submit', handleFormEdit);
+// popupForm.addEventListener('submit', handleFormEdit);
+popupForm.addEventListener('submit', (evt) => {
+    evt.preventDefault(); // Отмена стандартного поведения формы
+  
+    const newName = nameInput.value;
+    const newJob = jobInput.value;
+  
+    updateUserProfile(newName, newJob)
+      .then((data) => {
+        // Обновляем профиль только при успешном ответе
+        profileTitle.textContent = data.name;
+        profileDescription.textContent = data.about;
+        closePopup(editPopup);
+      })
+      .catch((err) => console.error(err)); // Обработка ошибок
+  });
+
 
 // Открытие попапа добавления карточки
-addButton.addEventListener('click', () => openPopup(addCardPopup));
+addButton.addEventListener('click', () => {
+    clearValidation(newCardForm);
+    openPopup(addCardPopup);
+});
 
 // Обработка формы добавления карточки
 newCardForm.addEventListener('submit', function(evt) {
     evt.preventDefault(); // Отмена стандартного поведения формы
-
-    // Получаем значения полей из формы
+  
     const cardData = {
-        name: placeNameInput.value,
-        link: linkInput.value
+      name: placeNameInput.value,
+      link: linkInput.value
     };
-
-    // Создаем и добавляем новую карточку в начало списка
-    const newCardElement = createCard(cardData, deleteCard, openImagePopup, toggleLike);
-    cardList.prepend(newCardElement); // Добавляем карточку в начало списка
-
-    // Закрываем попап и очищаем форму
-    closePopup(addCardPopup);
-    newCardForm.reset(); // Очищаем поля ввода формы
+  
+    addNewCard(cardData.name, cardData.link)
+      .then((newCard) => {
+        const newCardElement = createCard(newCard, deleteCard, openImagePopup, toggleLike);
+        cardList.prepend(newCardElement);
+        closePopup(addCardPopup);
+        newCardForm.reset();
+      })
+      .catch((err) => console.error(err)); // Обработка ошибок
 });
+
+// Инициализация страницы с Promise.all()
+Promise.all([getUserInfo(), getInitialCards()])
+  .then(([userData, initialCards]) => {
+    profileTitle.textContent = userData.name;
+    profileDescription.textContent = userData.about;
+
+    initialCards.forEach((cardData) => {
+      const cardElement = createCard(cardData, deleteCard, openImagePopup, toggleLike);
+      cardList.append(cardElement);
+    });
+  })
+.catch((err) => console.error(err)); // Обработка ошибок
+
 
 // Закрытие попапа при нажатии на оверлей
 popups.forEach(popup => {

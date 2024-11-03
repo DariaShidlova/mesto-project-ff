@@ -1,3 +1,5 @@
+import { clearErrors } from "../index";
+
 // Общая функция открытия попапа
 export function openPopup(popup) {
     popup.classList.add('popup_is-opened');
