@@ -9,7 +9,10 @@ const config = {
   // Функция для выполнения запросов с проверкой ответа
   function request(url, options) {
     return fetch(url, options)
-      .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+      .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`))
+      .then(data => {
+        return data; // возвращает объект с данными, включая userId или другие поля
+      });
   }
   
   // Загрузка данных пользователя
@@ -20,7 +23,7 @@ const config = {
     });
   }
   
-  // Загрузка начальных карточек
+  // Загрузка карточек
   export function getInitialCards() {
     return request(`${config.baseUrl}/cards`, {
       method: 'GET',
@@ -32,8 +35,8 @@ const config = {
   export function updateUserProfile(name, about) {
     return request(`${config.baseUrl}/users/me`, {
       method: 'PATCH',
-      headers: config.headers,  // Передаем headers из config
-      body: JSON.stringify({ name, about }) // Передаем name и about как JSON в теле
+      headers: config.headers, 
+      body: JSON.stringify({ name, about })
     });
   }
   
@@ -46,3 +49,32 @@ const config = {
     });
   }
   
+//   // Удаление карточки
+export function deleteCardAPI(cardId) {
+    return request(`${config.baseUrl}/cards/${cardId}`, {
+      method: 'DELETE',
+      headers: config.headers
+    });
+}
+
+export function likeCard(cardId) {
+    return request(`${config.baseUrl}/cards/likes/${cardId}`, {
+        method: 'PUT',
+        headers: config.headers
+    });
+}
+
+export function dislikeCard(cardId) {
+    return request(`${config.baseUrl}/cards/likes/${cardId}`, {
+        method: 'DELETE',
+        headers: config.headers
+    });
+}
+
+export function changeAvatar(avatar) {
+    return request(`${config.baseUrl}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: config.headers, 
+        body: JSON.stringify({ avatar })} 
+    )
+}

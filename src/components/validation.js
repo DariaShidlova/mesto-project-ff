@@ -67,6 +67,15 @@ function validateInput(inputElement) {
       setEventListeners(formElement);
     });
   }
+
+  function renderLoading(isLoading, buttonElement, buttonText = 'Сохранить') {
+    if (isLoading) {
+        buttonElement.textContent = 'Сохранение...';
+    } else {
+        buttonElement.textContent = buttonText;
+    }
+}
+
   
-  export { enableValidation, clearValidation };
+  export { enableValidation, clearValidation, renderLoading };
   

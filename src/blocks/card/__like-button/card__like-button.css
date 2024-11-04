@@ -18,20 +18,3 @@
 .card__like-button:hover {
   opacity: 0.6;
 }
-
-.places__item {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.card__like-container {
-  display: flex;
-  align-items: center;
-}
-
-.card__like-count {
-  font-size: 14px;
-  color: #333;
-  margin-left: 6px;
-}
