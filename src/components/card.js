@@ -43,5 +43,23 @@ export function deleteCard(event) {
     event.target.closest('.card').remove();
 }
 
-
-
+export function toggleLike(event, cardId, likeCountElement) {
+    const likeButton = event.target;
+    const isLiked = likeButton.classList.contains('card__like-button_is-active');
+  
+    if (isLiked) {
+      dislikeCard(cardId)
+        .then((data) => {
+          likeCountElement.textContent = data.likes.length;
+          likeButton.classList.remove('card__like-button_is-active');
+        })
+        .catch((err) => console.error(err));
+    } else {
+      likeCard(cardId)
+        .then((data) => {
+          likeCountElement.textContent = data.likes.length;
+          likeButton.classList.add('card__like-button_is-active');
+        })
+        .catch((err) => console.error(err));
+    }
+  }

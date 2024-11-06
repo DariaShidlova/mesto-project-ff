@@ -1,7 +1,8 @@
 // Проверка валидности каждого поля
-function validateInput(inputElement) {
-    const errorElement = inputElement.closest('form').querySelector(`#${inputElement.name}-error`);
-  
+function validateInput(inputElement, config) {
+  const formElement = inputElement.closest(config.formSelector);
+  const errorElement = formElement.querySelector(`#${inputElement.name}-error`);
+
     if (!inputElement.validity.valid) {
       if (inputElement.validity.valueMissing) {
         errorElement.textContent = 'Вы пропустили это поле.';
@@ -17,32 +18,32 @@ function validateInput(inputElement) {
     }
   
     // Добавляем или убираем класс для выделения поля с ошибкой
-    errorElement.classList.toggle('popup__error_visible', !inputElement.validity.valid);
-    inputElement.classList.toggle('popup__input_type_error', !inputElement.validity.valid);
+    errorElement.classList.toggle(config.errorClass, !inputElement.validity.valid);
+    inputElement.classList.toggle(config.inputErrorClass, !inputElement.validity.valid);
   }
   
   // Переключение состояния кнопки отправки
-  function toggleButtonState(formElement) {
-    const buttonElement = formElement.querySelector('.popup__button');
-    const isFormValid = formElement.checkValidity();
-  
-    buttonElement.disabled = !isFormValid;
-    buttonElement.classList.toggle('popup__button_disabled', !isFormValid);
-  }
+function toggleButtonState(formElement, config) {
+  const buttonElement = formElement.querySelector(config.submitButtonSelector);
+  const isFormValid = formElement.checkValidity();
+
+  buttonElement.disabled = !isFormValid;
+  buttonElement.classList.toggle(config.inactiveButtonClass, !isFormValid);
+}
   
   // Установка слушателей на поля формы
-  function setEventListeners(formElement) {
-    const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  
-    toggleButtonState(formElement);
-  
+  function setEventListeners(formElement, config) {
+    const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
+
+    toggleButtonState(formElement, config);
+
     inputList.forEach((inputElement) => {
-      inputElement.addEventListener('input', () => {
-        validateInput(inputElement);
-        toggleButtonState(formElement);
-      });
+        inputElement.addEventListener('input', () => {
+            validateInput(inputElement, config);
+            toggleButtonState(formElement, config);
+        });
     });
-  }
+}
   
   // Очистка ошибок валидации
   function clearValidation(formElement) {
@@ -61,21 +62,12 @@ function validateInput(inputElement) {
   }
   
   // Включение валидации для всех форм на странице
-  function enableValidation() {
-    const formList = Array.from(document.querySelectorAll('.popup__form'));
+  function enableValidation(config) {
+    const formList = Array.from(document.querySelectorAll(config.formSelector));
     formList.forEach((formElement) => {
-      setEventListeners(formElement);
+        setEventListeners(formElement, config);
     });
-  }
-
-  function renderLoading(isLoading, buttonElement, buttonText = 'Сохранить') {
-    if (isLoading) {
-        buttonElement.textContent = 'Сохранение...';
-    } else {
-        buttonElement.textContent = buttonText;
-    }
 }
 
-  
-  export { enableValidation, clearValidation, renderLoading };
+  export { enableValidation, clearValidation};
   

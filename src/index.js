@@ -1,9 +1,9 @@
 import "./pages/index.css";
 import { createCard } from "./components/card.js";
-import { deleteCard } from "./components/card.js";
+import { deleteCard, toggleLike } from "./components/card.js";
 import { openPopup,closePopup } from "./components/modal.js";
 import { initialCards} from "./components/cards.js";
-import { enableValidation, clearValidation, renderLoading } from "./components/validation.js";
+import { enableValidation, clearValidation } from "./components/validation.js";
 import { getInitialCards, getUserInfo, addNewCard, updateUserProfile, likeCard, dislikeCard, changeAvatar } from "./components/api.js";
 
 enableValidation({
@@ -49,6 +49,14 @@ function openAvatarPopup() {
 // Обработчик события для открытия попапа при клике на аватар
 avatarImage.addEventListener('click', openAvatarPopup);
 
+function renderLoading(isLoading, buttonElement, buttonText = 'Сохранить') {
+    if (isLoading) {
+        buttonElement.textContent = 'Сохранение...';
+    } else {
+        buttonElement.textContent = buttonText;
+    }
+}
+
 avatarForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
     const submitButton = evt.submitter;
@@ -74,10 +82,10 @@ function openImagePopup(imageSrc, caption) {
     openPopup(imagePopup);
 }
 
-// Функция изменения статуса лайка
-function toggleLike(event) {
-    event.target.classList.toggle('card__like-button_is-active');
-}
+// // Функция изменения статуса лайка
+// function toggleLike(event) {
+//     event.target.classList.toggle('card__like-button_is-active');
+// }
 
 // Добавление карточек на страницу
 initialCards.forEach(cardData => {
@@ -100,21 +108,21 @@ editButton.addEventListener('click', () => {
     openPopup(editPopup);
 });
 
-// функция редактирования профиля
-function handleFormEdit(evt) {
-    evt.preventDefault(); // Отмена стандартного поведения формы
+// // функция редактирования профиля
+// function handleFormEdit(evt) {
+//     evt.preventDefault(); // Отмена стандартного поведения формы
 
-    // Получаем значения полей из формы
-    const newName = nameInput.value;
-    const newJob = jobInput.value;
+//     // Получаем значения полей из формы
+//     const newName = nameInput.value;
+//     const newJob = jobInput.value;
 
-    // Вставляем новые значения в профиль
-    profileTitle.textContent = newName;
-    profileDescription.textContent = newJob;
+//     // Вставляем новые значения в профиль
+//     profileTitle.textContent = newName;
+//     profileDescription.textContent = newJob;
 
-    // Закрываем попап после сохранения
-    closePopup(editPopup);
-}
+//     // Закрываем попап после сохранения
+//     closePopup(editPopup);
+// }
 
 // popupForm.addEventListener('submit', handleFormEdit);
 popupForm.addEventListener('submit', (evt) => {
