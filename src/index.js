@@ -1,10 +1,10 @@
 import "./pages/index.css";
 import { createCard } from "./components/card.js";
-import { deleteCard, toggleLike } from "./components/card.js";
+import { deleteCard} from "./components/card.js";
 import { openPopup,closePopup } from "./components/modal.js";
 import { initialCards} from "./components/cards.js";
 import { enableValidation, clearValidation } from "./components/validation.js";
-import { getInitialCards, getUserInfo, addNewCard, updateUserProfile, likeCard, dislikeCard, changeAvatar } from "./components/api.js";
+import { getInitialCards, getUserInfo, addNewCard, updateUserProfile, likeCard, dislikeCard, deleteCardAPI, changeAvatar } from "./components/api.js";
 
 enableValidation({
     formSelector: '.popup__form',
@@ -82,17 +82,6 @@ function openImagePopup(imageSrc, caption) {
     openPopup(imagePopup);
 }
 
-// // Функция изменения статуса лайка
-// function toggleLike(event) {
-//     event.target.classList.toggle('card__like-button_is-active');
-// }
-
-// Добавление карточек на страницу
-initialCards.forEach(cardData => {
-    const cardElement = createCard(cardData, deleteCard, openImagePopup, toggleLike, userId);
-    cardList.append(cardElement);
-});
-
 // Закрытие попапов при нажатии на крестик
 closeButtons.forEach(button => {
     const popup = button.closest('.popup');
@@ -107,22 +96,6 @@ editButton.addEventListener('click', () => {
     clearValidation(popupForm);
     openPopup(editPopup);
 });
-
-// // функция редактирования профиля
-// function handleFormEdit(evt) {
-//     evt.preventDefault(); // Отмена стандартного поведения формы
-
-//     // Получаем значения полей из формы
-//     const newName = nameInput.value;
-//     const newJob = jobInput.value;
-
-//     // Вставляем новые значения в профиль
-//     profileTitle.textContent = newName;
-//     profileDescription.textContent = newJob;
-
-//     // Закрываем попап после сохранения
-//     closePopup(editPopup);
-// }
 
 // popupForm.addEventListener('submit', handleFormEdit);
 popupForm.addEventListener('submit', (evt) => {
@@ -163,7 +136,7 @@ newCardForm.addEventListener('submit', function(evt) {
 
     addNewCard(cardData.name, cardData.link)
         .then((newCard) => {
-            const newCardElement = createCard(newCard, deleteCard, openImagePopup, toggleLike);
+            const newCardElement = createCard(newCard, handleDeleteCard, openImagePopup, handleToggleLike, userId);
             cardList.prepend(newCardElement);
             closePopup(addCardPopup);
             newCardForm.reset();
@@ -172,6 +145,27 @@ newCardForm.addEventListener('submit', function(evt) {
         .finally(() => renderLoading(false, submitButton));
 });
 
+// Обработчик для удаления карточки
+function handleDeleteCard(cardId, cardElement) {
+    deleteCardAPI(cardId)
+      .then(() => {
+        deleteCard(cardElement);  // Удаляет карточку из DOM
+      })
+      .catch((err) => console.error(err));
+  }
+  
+  // Обработчик для лайка/дизлайка
+  function handleToggleLike(cardId, likeButton, likeCountElement) {
+    const isLiked = likeButton.classList.contains('card__like-button_is-active');
+    const likeAction = isLiked ? dislikeCard : likeCard;
+    
+    likeAction(cardId)
+      .then((data) => {
+        likeCountElement.textContent = data.likes.length;
+        likeButton.classList.toggle('card__like-button_is-active', !isLiked);
+      })
+      .catch((err) => console.error(err));
+  }
 
 // Инициализация страницы с Promise.all()
 Promise.all([getUserInfo(), getInitialCards()])
@@ -181,11 +175,17 @@ Promise.all([getUserInfo(), getInitialCards()])
     userId = userData._id;
 
     initialCards.forEach((cardData) => {
-      const cardElement = createCard(cardData, deleteCard, openImagePopup, toggleLike);
-      cardList.append(cardElement);
-    });
-  })
- .catch((err) => console.error(err));
+        const cardElement = createCard(
+          cardData,
+          handleDeleteCard,      // Функция удаления
+          openImagePopup,         // Функция открытия изображения
+          handleToggleLike,       // Функция для лайка
+          userId                  // Передаем userId
+        );
+        cardList.append(cardElement);
+      });
+    })
+    .catch((err) => console.error(err));
 
 
 // Закрытие попапа при нажатии на оверлей
