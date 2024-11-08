@@ -175,13 +175,7 @@ Promise.all([getUserInfo(), getInitialCards()])
     userId = userData._id;
 
     initialCards.forEach((cardData) => {
-        const cardElement = createCard(
-          cardData,
-          handleDeleteCard,      // Функция удаления
-          openImagePopup,         // Функция открытия изображения
-          handleToggleLike,       // Функция для лайка
-          userId                  // Передаем userId
-        );
+        const cardElement = createCard( cardData, handleDeleteCard, openImagePopup, handleToggleLike, userId);
         cardList.append(cardElement);
       });
     })
