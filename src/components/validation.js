@@ -46,20 +46,20 @@ function toggleButtonState(formElement, config) {
 }
   
   // Очистка ошибок валидации
-  function clearValidation(formElement) {
-    const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-    const buttonElement = formElement.querySelector('.popup__button');
-  
+  function clearValidation(formElement, config) {
+    const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
+    const buttonElement = formElement.querySelector(config.submitButtonSelector);
+
     inputList.forEach((inputElement) => {
-      const errorElement = formElement.querySelector(`#${inputElement.name}-error`);
-      errorElement.textContent = '';
-      errorElement.classList.remove('popup__error_visible');
-      inputElement.classList.remove('popup__input_type_error');
+        const errorElement = formElement.querySelector(`#${inputElement.name}-error`);
+        errorElement.textContent = '';
+        errorElement.classList.remove(config.errorClass);
+        inputElement.classList.remove(config.inputErrorClass);
     });
-  
+
     buttonElement.disabled = true;
-    buttonElement.classList.add('popup__button_disabled');
-  }
+    buttonElement.classList.add(config.inactiveButtonClass);
+}
   
   // Включение валидации для всех форм на странице
   function enableValidation(config) {

@@ -2,18 +2,19 @@ import "./pages/index.css";
 import { createCard } from "./components/card.js";
 import { deleteCard} from "./components/card.js";
 import { openPopup,closePopup } from "./components/modal.js";
-import { initialCards} from "./components/cards.js";
 import { enableValidation, clearValidation } from "./components/validation.js";
 import { getInitialCards, getUserInfo, addNewCard, updateUserProfile, likeCard, dislikeCard, deleteCardAPI, changeAvatar } from "./components/api.js";
 
-enableValidation({
+const validationConfig = {
     formSelector: '.popup__form',
     inputSelector: '.popup__input',
     submitButtonSelector: '.popup__button',
     inactiveButtonClass: 'popup__button_disabled',
     inputErrorClass: 'popup__input_type_error',
     errorClass: 'popup__error_visible'
-});
+};
+
+enableValidation(validationConfig);
 
 // объявление глобальных переменных
 const cardList = document.querySelector('.places__list');
@@ -42,7 +43,7 @@ let userId;
 
 // Функция открытия попапа обновления аватара
 function openAvatarPopup() {
-    clearValidation(avatarForm); // Очищаем валидацию
+    clearValidation(avatarForm, validationConfig); // Очищаем валидацию
     openPopup(avatarPopup);
 }
 
@@ -93,7 +94,7 @@ editButton.addEventListener('click', () => {
     //Подставляем текущее имя и описание в поля формы
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
-    clearValidation(popupForm);
+    clearValidation(popupForm, validationConfig);
     openPopup(editPopup);
 });
 
@@ -119,7 +120,7 @@ popupForm.addEventListener('submit', (evt) => {
 
 // Открытие попапа добавления карточки
 addButton.addEventListener('click', () => {
-    clearValidation(newCardForm);
+    clearValidation(newCardForm, validationConfig);
     openPopup(addCardPopup);
 });
 
